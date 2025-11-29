@@ -15,29 +15,33 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Tuition Enrollment API")
 
+# CORS (allow Netlify + Render)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # for now, allow all; you can restrict to Netlify domain later
+    allow_origins=["*"],  # you can restrict to Netlify domain later
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 # ---------- DB dependency ----------
 def get_db():
-  db = SessionLocal()
-  try:
-    yield db
-  finally:
-    db.close()
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-# ---------- Email utility ----------
-def send_enrollment_email(enrollment: models.Enrollment) -> None:
+
+# ---------- EMAIL SENDER ----------
+def send_enrollment_email(enrollment: models.Enrollment):
     """
-    Send a simple email notification to you for each new enrollment.
+    Sends an email notification for every new enrollment.
     Uses environment variables:
       SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM, EMAIL_TO
     """
+
     host = os.getenv("SMTP_HOST")
     port = os.getenv("SMTP_PORT")
     user = os.getenv("SMTP_USER")
@@ -45,47 +49,52 @@ def send_enrollment_email(enrollment: models.Enrollment) -> None:
     from_email = os.getenv("EMAIL_FROM") or user
     to_email = os.getenv("EMAIL_TO") or user
 
-    # If email is not configured, just skip silently
+    # If anything missing → skip email safely
     if not host or not port or not user or not password or not to_email:
+        print("Email not configured — skipping.")
         return
 
     try:
         port = int(port)
-    except ValueError:
+    except:
         port = 587  # default
 
+    # Email body
     msg = EmailMessage()
-    msg["Subject"] = f"New tuition enrollment: {enrollment.student_name}"
+    msg["Subject"] = f"New Tuition Enrollment — {enrollment.student_name}"
     msg["From"] = from_email
     msg["To"] = to_email
 
-    body_lines = [
-        "You have a new tuition enrollment request:",
-        "",
-        f"Student Name : {enrollment.student_name}",
-        f"Class        : {enrollment.student_class}",
-        f"Board        : {enrollment.board or '-'}",
-        f"Subjects     : {enrollment.subjects}",
-        f"Area         : {enrollment.area}",
-        f"Phone        : {enrollment.phone}",
-        f"Preferred time: {enrollment.preferred_time or '-'}",
-        "",
-        "This message was sent automatically from your tuition portal.",
-    ]
-    msg.set_content("\n".join(body_lines))
+    body = f"""
+You have a new tuition enrollment request:
 
+Student Name : {enrollment.student_name}
+Class        : {enrollment.student_class}
+Board        : {enrollment.board}
+Subjects     : {enrollment.subjects}
+Area         : {enrollment.area}
+Phone        : {enrollment.phone}
+Preferred Time: {enrollment.preferred_time}
+
+This email was sent by your Tuition Portal automatically.
+"""
+
+    msg.set_content(body)
+
+    # Send email
     try:
         with smtplib.SMTP(host, port, timeout=15) as server:
             server.starttls()
             server.login(user, password)
             server.send_message(msg)
+            print("Email sent successfully!")
     except Exception as e:
-        # Don’t crash the API if email fails; just log it
-        print("Error sending email:", e)
+        print("Email sending failed:", e)
 
 
+# ---------- ROUTES ----------
 @app.get("/")
-def read_root():
+def home():
     return {"message": "Tuition enrollment API is running"}
 
 
@@ -104,11 +113,12 @@ def create_enrollment(
         phone=data.phone,
         preferred_time=data.preferred_time,
     )
+
     db.add(enrollment)
     db.commit()
     db.refresh(enrollment)
 
-    # 🔔 Trigger email notification in the background
+    # Send email without blocking
     background_tasks.add_task(send_enrollment_email, enrollment)
 
     return enrollment
