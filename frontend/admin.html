@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Tuition Enrollments</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .admin-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .admin-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .admin-input {
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #d4d4d4;
+      min-width: 180px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #eff6ff;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #e5e7eb;
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-small.secondary {
+      background: #6b7280;
+    }
+
+    .table-wrapper {
+      max-height: 450px;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-top: 0.5rem;
+    }
+
+    /* Login form styling */
+    .login-form {
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    .login-form label {
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 0.45rem;
+      border-radius: 8px;
+      border: 1px solid #d4d4d4;
+      box-sizing: border-box;
+      margin-top: 0.2rem;
+    }
+
+    .login-error {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: #b91c1c;
+    }
+
+    .login-info {
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+      color: #4b5563;
+    }
+
+    .logout-btn {
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div>
+      <h1>Admin – Home Tuitions</h1>
+      <p>View all enrollment requests in one place.</p>
+    </div>
+    <a href="index.html" class="btn">Back to main site</a>
+  </header>
+
+  <main>
+    <!-- 🔐 LOGIN SECTION -->
+    <section id="loginSection" class="admin-container">
+      <h2>Admin Login</h2>
+      <p class="login-info">
+        This page is only for you. Enter your admin credentials to continue.
+      </p>
+      <form id="loginForm" class="login-form">
+        <label>
+          Username
+          <input type="text" id="loginUsername" required />
+        </label>
+        <label>
+          Password
+          <input type="password" id="loginPassword" required />
+        </label>
+        <button type="submit" class="btn">Login</button>
+        <p id="loginError" class="login-error"></p>
+      </form>
+    </section>
+
+    <!-- 📊 ADMIN TABLE SECTION -->
+    <section id="adminSection" class="admin-container" style="display: none;">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">Enrollment Requests</div>
+          <p id="adminStatus" class="status">Loading enrollments...</p>
+        </div>
+        <div class="admin-controls">
+          <input
+            type="text"
+            id="searchInput"
+            class="admin-input"
+            placeholder="Search by name / class / area..."
+          />
+          <button id="refreshBtn" class="btn-small">Refresh</button>
+          <button id="exportBtn" class="btn-small secondary">Export CSV</button>
+          <button id="logoutBtn" class="btn-small secondary logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student</th>
+              <th>Class / Board</th>
+              <th>Subjects</th>
+              <th>Area</th>
+              <th>Phone</th>
+              <th>Preferred Time</th>
+              <th>Created At (UTC)</th>
+            </tr>
+          </thead>
+          <tbody id="enrollmentsTableBody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> Home Tuitions – Admin</p>
+  </footer>
+
+  <script src="admin.js"></script>
+</body>
+</html>
