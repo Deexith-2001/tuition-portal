@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000"; // change to Render URL after deploy
+const API_BASE_URL = "https://tuition-portal-mzzz.onrender.com"; // change to Render URL after deploy
 
 document.getElementById("year").textContent = new Date().getFullYear();
 

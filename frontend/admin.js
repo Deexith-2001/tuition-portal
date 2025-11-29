@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000"; // same as main frontend
+const API_BASE_URL = "https://tuition-portal-mzzz.onrender.com"; // same as main frontend
 
 // 🔐 Simple admin credentials (CHANGE THESE!)
 const ADMIN_USERNAME = "Deexithmsd";
