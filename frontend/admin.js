@@ -1,8 +1,8 @@
-const API_BASE_URL = "https://tuition-portal-mzzz.onrender.com"; // same as main frontend
+const API_BASE_URL = "https://tuition-portal-mzzz.onrender.com"; // backend API
 
-// 🔐 Simple admin credentials (CHANGE THESE!)
+// 🔐 Simple admin credentials (front-end only)
 const ADMIN_USERNAME = "Deexithmsd";
-const ADMIN_PASSWORD = "Deexith@2001";  // choose your own secure password
+const ADMIN_PASSWORD = "Deexith@2001"; // change this if you share the site
 
 // DOM elements
 const tbody = document.getElementById("enrollmentsTableBody");
@@ -19,7 +19,10 @@ const loginUsername = document.getElementById("loginUsername");
 const loginPassword = document.getElementById("loginPassword");
 const loginError = document.getElementById("loginError");
 
-document.getElementById("year").textContent = new Date().getFullYear();
+const yearEl = document.getElementById("year");
+if (yearEl) {
+  yearEl.textContent = new Date().getFullYear();
+}
 
 let allEnrollments = [];
 
@@ -30,35 +33,41 @@ function isLoggedIn() {
 }
 
 function showLogin() {
+  if (!loginSection || !adminSection) return;
   loginSection.style.display = "block";
   adminSection.style.display = "none";
-  loginError.textContent = "";
-  loginPassword.value = "";
+  if (loginError) loginError.textContent = "";
+  if (loginPassword) loginPassword.value = "";
 }
 
 function showAdmin() {
+  if (!loginSection || !adminSection) return;
   loginSection.style.display = "none";
   adminSection.style.display = "block";
   loadEnrollments();
 }
 
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const user = loginUsername.value.trim();
-  const pass = loginPassword.value;
+if (loginForm) {
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const user = loginUsername.value.trim();
+    const pass = loginPassword.value;
 
-  if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
-    sessionStorage.setItem("isAdminLoggedIn", "true");
-    showAdmin();
-  } else {
-    loginError.textContent = "Invalid username or password.";
-  }
-});
+    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+      sessionStorage.setItem("isAdminLoggedIn", "true");
+      showAdmin();
+    } else {
+      loginError.textContent = "Invalid username or password.";
+    }
+  });
+}
 
-logoutBtn.addEventListener("click", () => {
-  sessionStorage.removeItem("isAdminLoggedIn");
-  showLogin();
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    sessionStorage.removeItem("isAdminLoggedIn");
+    showLogin();
+  });
+}
 
 // On page load: decide what to show
 if (isLoggedIn()) {
@@ -70,29 +79,40 @@ if (isLoggedIn()) {
 // ============ DATA LOADING / TABLE ============
 
 async function loadEnrollments() {
-  if (!statusEl) return; // if not visible yet
+  if (!tbody || !statusEl) return;
 
   statusEl.textContent = "Loading enrollments...";
   tbody.innerHTML = "";
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/enrollments`);
+
     if (!res.ok) {
-      throw new Error("Failed to load enrollments");
+      throw new Error(`Failed to load enrollments (status ${res.status})`);
     }
+
     const data = await res.json();
-    allEnrollments = data;
+    allEnrollments = Array.isArray(data) ? data : [];
     renderTable(allEnrollments);
-    statusEl.textContent = `Loaded ${data.length} enrollments.`;
+
+    if (allEnrollments.length === 0) {
+      statusEl.textContent = "No enrollments yet.";
+    } else {
+      statusEl.textContent = `Loaded ${allEnrollments.length} enrollments.`;
+    }
   } catch (err) {
     console.error(err);
     statusEl.textContent =
-      "Error loading enrollments. Make sure backend is running.";
+      "Error loading enrollments. Please refresh the page or try again later.";
+    renderTable([]); // clear table and show "No enrollments" row
   }
 }
 
 function renderTable(rows) {
+  if (!tbody) return;
+
   tbody.innerHTML = "";
+
   if (!rows.length) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
@@ -109,8 +129,13 @@ function renderTable(rows) {
     tr.innerHTML = `
       <td>${e.id}</td>
       <td>${escapeHtml(e.student_name)}</td>
-      <td>${escapeHtml(e.student_class || "")}
-          ${e.board ? `<span class="badge">${escapeHtml(e.board)}</span>` : ""}
+      <td>
+        ${escapeHtml(e.student_class || "")}
+        ${
+          e.board
+            ? `<span class="badge">${escapeHtml(e.board)}</span>`
+            : ""
+        }
       </td>
       <td>${escapeHtml(e.subjects || "")}</td>
       <td>${escapeHtml(e.area || "")}</td>
@@ -144,7 +169,8 @@ function formatDate(iso) {
   }
 }
 
-// search / filter
+// ============ SEARCH / FILTER ============
+
 if (searchInput) {
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.toLowerCase().trim();
@@ -166,14 +192,16 @@ if (searchInput) {
   });
 }
 
-// refresh button
+// ============ REFRESH BUTTON ============
+
 if (refreshBtn) {
   refreshBtn.addEventListener("click", () => {
     loadEnrollments();
   });
 }
 
-// export CSV
+// ============ EXPORT CSV ============
+
 if (exportBtn) {
   exportBtn.addEventListener("click", () => {
     if (!allEnrollments.length) {
