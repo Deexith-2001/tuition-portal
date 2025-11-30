@@ -119,7 +119,7 @@ def create_enrollment(
     db.refresh(enrollment)
 
     # Send email without blocking
-    background_tasks.add_task(send_enrollment_email, enrollment)
+    # background_tasks.add_task(send_enrollment_email, enrollment)
 
     return enrollment
 
