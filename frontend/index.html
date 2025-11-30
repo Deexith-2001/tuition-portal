@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Maths Home Tuitions – Sai Deexith</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -28,6 +29,11 @@
           I offer personalized <strong>Maths home tuitions for classes 1–10</strong> with
           clear explanations, friendly guidance and exam-focused practice.
         </p>
+        <div class="hero-pill-row">
+          <div class="hero-pill">3+ years school teaching</div>
+          <div class="hero-pill">1–10th Maths only</div>
+          <div class="hero-pill">Kukatpally · KPHB · JNTU</div>
+        </div>
         <div class="hero-actions">
           <a href="#enroll" class="btn primary">Enroll / Request a Call Back</a>
           <a href="#about" class="btn ghost">Know more about me</a>
@@ -36,14 +42,23 @@
           Share your details in the form below and I will call you back to discuss timings and fees.
         </p>
       </div>
+
       <div class="hero-card">
-        <h3>At a glance</h3>
-        <ul>
-          <li>📚 Subject: <strong>Mathematics only</strong></li>
-          <li>👦👧 Classes: <strong>1st – 10th</strong></li>
-          <li>🏫 Experience: <strong>3 years in school</strong> + part-time home tuitions</li>
-          <li>📍 Areas: Kukatpally, KPHB, JNTU surroundings</li>
-          <li>⏰ Timings: Evening slots (1–2 hour sessions)</li>
+        <div class="hero-avatar">
+          <!-- Your photo: put tutor.jpg in the frontend folder -->
+          <img src="tutor.jpg" alt="Sai Deexith - Maths Tutor" onerror="this.style.display='none';">
+        </div>
+        <h3>Your Maths Tutor</h3>
+        <p class="hero-card-text">
+          Hi, I’m <strong>Sai Deexith</strong>. I’ve worked in a school for the last
+          <strong>3 years</strong> and helped many students improve their Maths with
+          an easy, entertaining way of teaching.
+        </p>
+        <ul class="hero-list">
+          <li>📚 Maths for classes <strong>1–10</strong></li>
+          <li>🎯 Focus on understanding + marks</li>
+          <li>✅ 100% success rate with higher-class students I’ve tutored</li>
+          <li>⏰ 1–2 hour home tuition sessions</li>
         </ul>
       </div>
     </section>
@@ -116,13 +131,27 @@
     <!-- WHY CHOOSE SECTION -->
     <section class="section">
       <h3>Why Parents Choose My Tuitions</h3>
-      <ol class="steps">
-        <li><strong>Entertaining explanation style</strong> – students stay engaged and don’t feel bored.</li>
-        <li><strong>Personal attention</strong> – one-to-one or very small batch for better focus.</li>
-        <li><strong>Regular progress updates</strong> – parents stay informed about improvement.</li>
-        <li><strong>Flexible timings</strong> – 1–2 hour sessions based on your convenience.</li>
-        <li><strong>Result-oriented teaching</strong> – focus on building confidence and scoring well in exams.</li>
-      </ol>
+      <div class="cards-grid cards-grid--compact">
+        <div class="card card-soft">
+          <span class="card-pill">Teaching style</span>
+          <p><strong>Entertaining explanations</strong> that keep children interested
+          instead of bored or scared of Maths.</p>
+        </div>
+        <div class="card card-soft">
+          <span class="card-pill">Attention</span>
+          <p><strong>Personal attention</strong> with one-to-one or very small batches
+          so no child is left behind.</p>
+        </div>
+        <div class="card card-soft">
+          <span class="card-pill">Results</span>
+          <p><strong>Result-oriented planning</strong> with practice, tests and proper
+          revision before exams.</p>
+        </div>
+        <div class="card card-soft">
+          <span class="card-pill">Convenience</span>
+          <p><strong>Flexible 1–2 hour sessions</strong> at your home in convenient evening slots.</p>
+        </div>
+      </div>
     </section>
 
     <!-- HOW IT WORKS -->
@@ -161,7 +190,7 @@
           </label>
 
           <label>
-            Maths Topics / Chapters
+            Maths Topics / Chapters*
             <input type="text" name="subjects" placeholder="e.g. Fractions, Algebra, Geometry" required />
           </label>
         </div>
@@ -192,6 +221,8 @@
   <footer>
     <p>&copy; <span id="year"></span> Maths Home Tuitions by Sai Deexith</p>
   </footer>
+
+  <a href="#enroll" class="floating-cta">Enroll Now</a>
 
   <script src="script.js"></script>
 </body>
